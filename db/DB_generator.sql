@@ -1,61 +1,68 @@
 ﻿CREATE DATABASE Fruitables;
-
+GO
 USE Fruitables;
+GO
 
 -- 1. Tạo bảng tblAccount
-CREATE TABLE tblAccount (
+CREATE TABLE tblAccount
+(
     AccountID INT PRIMARY KEY,
-    Name VARCHAR(255),
+    Name NVARCHAR(255),
     Password VARCHAR(255),
-    Address VARCHAR(255),
+    Address NVARCHAR(255),
     Phone VARCHAR(20),
     Role VARCHAR(50)
 );
 
 -- 2. Tạo bảng tblProduct
-CREATE TABLE tblProduct (
+CREATE TABLE tblProduct
+(
     ProductID INT PRIMARY KEY,
-    Name VARCHAR(255),
-    Category VARCHAR(100),
-    Price FLOAT,
+    Name NVARCHAR(255),
+    Category NVARCHAR(100),
+    Price DECIMAL(18, 2),
     Stock INT,
     DueDate DATE,
-    Description TEXT,
+    Description NVARCHAR(MAX),
     Discount INT,
-    Image VARCHAR(255)
+    Image NVARCHAR(500)
 );
 
 -- 3. Tạo bảng tblInvoice
-CREATE TABLE tblInvoice (
+CREATE TABLE tblInvoice
+(
     InvoiceID INT PRIMARY KEY,
     AccountID INT,
-    TotalPayment FLOAT,
-    State VARCHAR(50),
+    TotalPayment DECIMAL(18, 2),
+    State NVARCHAR(50),
     CONSTRAINT FK_Invoice_Account FOREIGN KEY (AccountID) REFERENCES tblAccount(AccountID)
 );
 
 -- 4. Tạo bảng tblPayment
-CREATE TABLE tblPayment (
+CREATE TABLE tblPayment
+(
     PaymentID INT PRIMARY KEY,
     InvoiceID INT,
-    Paying_method VARCHAR(100),
+    Paying_method NVARCHAR(100),
+    -- Sửa sang NVARCHAR
     Paying_date DATE,
     CONSTRAINT FK_Payment_Invoice FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID)
 );
 
 -- 5. Tạo bảng tblOrder
--- Khi đã thêm tiền tố 'tbl', bạn không còn lo bị trùng với từ khóa 'Order' nữa
-CREATE TABLE tblOrder (
+CREATE TABLE tblOrder
+(
     OrderID INT PRIMARY KEY,
-    DeliveryMethod VARCHAR(100),
+    DeliveryMethod NVARCHAR(100),
     InvoiceID INT,
-    Address VARCHAR(255),
+    Address NVARCHAR(255),
     Phone VARCHAR(20),
     CONSTRAINT FK_Order_Invoice FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID)
 );
 
 -- 6. Tạo bảng tblInvoiceDetail
-CREATE TABLE tblInvoiceDetail (
+CREATE TABLE tblInvoiceDetail
+(
     InvoiceDetailID INT PRIMARY KEY,
     InvoiceID INT,
     ProductID INT,
@@ -65,7 +72,8 @@ CREATE TABLE tblInvoiceDetail (
 );
 
 -- 7. Tạo bảng tblCart
-CREATE TABLE tblCart (
+CREATE TABLE tblCart
+(
     AccountID INT,
     ProductID INT,
     Quantity INT,
