@@ -18,9 +18,9 @@ $("#loginForm").on("submit", function (e) {
                 localStorage.setItem("accountID", res.accountID);
                 localStorage.setItem("userName", res.user);
 
-                alert("Chào mừng " + res.user + " đã quay trở lại!");
-                // Chuyển hướng về trang chủ ở cổng 5500
-                window.location.href = "http://127.0.0.1:5500/templates/index.html";
+                alert(`Chào mừng ${res.user} đã quay trở lại!`);
+
+                window.location.href = "index.html";
             }
         },
         error: function (xhr) {

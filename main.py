@@ -7,17 +7,14 @@ app = Flask(__name__)
 CORS(app)
 
 cn_str = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=ADMIN-PC;DATABASE=Fruitables;Trusted_Connection=yes'
-conn = pyodbc.connect(cn_str)
+conn = pyodbc.connect(cn_str, autocommit=True)
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
-    
     data = request.get_json(force=True)
     username = data.get("username")
     password = data.get("password")
@@ -39,12 +36,13 @@ def login():
         "accountID": row[0],
         "user": row[1]
     })
-
 @app.route("/product/getAllProduct", methods=["GET"])
 def get_all_products():
-    cursor = conn.cursor()
-    cursor.execute("SELECT ProductID, ProductName, Category, Price, Stock, Descript, Discount, ProductImage FROM tblProduct")
-    rows = cursor.fetchall()
+    # Sử dụng 'with' để tự động đóng cursor khi lấy xong dữ liệu
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT ProductID, ProductName, Category, Price, Stock, Descript, Discount, ProductImage FROM tblProduct")
+        rows = cursor.fetchmany(100)
+        
     result = []
     for row in rows:
         result.append({
@@ -71,6 +69,7 @@ def add_to_cart():
     cursor.execute(sql, (acc_id, prod_id, acc_id, prod_id, acc_id, prod_id))
     conn.commit()
     return jsonify({"message": "Success"})
+    
 
 @app.route("/cart/getByUserId/<int:acc_id>", methods=["GET"])
 def get_cart_items(acc_id):
@@ -83,7 +82,7 @@ def get_cart_items(acc_id):
     WHERE c.AccountID = ?
     """
     cursor.execute(query, (acc_id,))
-    rows = cursor.fetchall()
+    rows = cursor.fetchmany(100)
     cart = [{"ProductID": r[0], "ProductName": r[1], "Price": float(r[2]), "ProductImage": r[3], "Quantity": r[4]} for r in rows]
     return jsonify(cart)
 

@@ -44,18 +44,13 @@ async function loadCheckoutData() {
                     <td class="py-5">${formatVND(itemTotal)}</td>
                 </tr>`;
         }).join('');
-
-        // Hiển thị tạm tính
         subtotalEl.innerText = formatVND(subtotal);
-
-        // Gọi hàm tính tổng cuối cùng (bao gồm ship)
         calculateFinalTotal();
 
     } catch (err) {
         console.error("Lỗi load checkout:", err);
     }
 }
-
 // 2. Hàm tính tổng tiền cuối cùng = Subtotal + Shipping
 function calculateFinalTotal() {
     const subtotalText = document.getElementById('subtotal').innerText;
