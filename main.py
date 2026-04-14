@@ -19,7 +19,7 @@ def register_api():
         phone = data.get("phone")
         address = data.get("address")
 
-        cursor = conn.cursor() # Khởi tạo cursor thủ công để dễ kiểm soát
+        cursor = conn.cursor()
         
         # 1. Kiểm tra trùng (Dùng COUNT cho nhanh)
         cursor.execute("SELECT COUNT(*) FROM tblAccount WHERE UserName = ?", (username,))
@@ -33,6 +33,7 @@ def register_api():
         )
         conn.commit() # Bắt buộc phải commit để lưu vào DB
 
+        # 3. Lấy lại AccountID vừa tự tăng
         cursor.execute("SELECT AccountID FROM tblAccount WHERE UserName = ?", (username,))
         row = cursor.fetchone()
         
@@ -51,13 +52,13 @@ def register_api():
 
     except Exception as e:
         print(f"LỖI SQL CHI TIẾT: {e}") 
-        if conn: conn.rollback() 
+        if conn: conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         if cursor: cursor.close() 
 # API Đăng nhập
 @app.route("/login", methods=["POST"])
-def login_api(): # Đổi tên hàm để không trùng
+def login_api(): 
     data = request.get_json(force=True)
     username = data.get("username")
     password = data.get("password")
@@ -117,7 +118,6 @@ def add_to_cart():
 @app.route("/cart/getByUserId/<int:acc_id>", methods=["GET"])
 def get_cart_items(acc_id):
     cursor = conn.cursor()
-    # JOIN với bảng sản phẩm để lấy thông tin hiển thị
     query = """
     SELECT c.ProductID, p.ProductName, p.Price, p.ProductImage, c.Quantity
     FROM tblCart c
