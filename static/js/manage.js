@@ -1,7 +1,7 @@
 loadProduct();
 
 // 1. Hàm tải danh sách sản phẩm
-function loadProduct() { 
+function loadProduct() {
     $.ajax({
         url: "http://127.0.0.1:5000/product/getByCate",
         method: "GET",
@@ -13,7 +13,7 @@ function loadProduct() {
             res.forEach(product => {
                 const html = `
                 <tr>
-                    <td><img src="${product.image}"></td>
+                    <td><img src="/static/img/products/${product.ProductImage}"></td>
                     <td>${product.name}</td>
                     <td>${product.price}</td>
                     <td>${product.category}</td>
@@ -27,7 +27,7 @@ function loadProduct() {
             });
             $('#productTable').html(container);
         },
-        error: function(err){
+        error: function (err) {
             console.log(err);
             alert("Không thể tải danh sách sản phẩm");
         }
@@ -47,7 +47,7 @@ function editProduct(product) {
     document.getElementById("price").value = product.price;
     document.getElementById("category").value = product.category;
     document.getElementById("image").value = product.image;
-    
+
     document.getElementById("modalTitle").innerText = "Chỉnh sửa sản phẩm";
 }
 
@@ -65,10 +65,10 @@ function saveProduct() {
     }
 
     const productData = { name, price, category, image };
-    
+
     // Logic: Nếu có ID thì gọi API Update, nếu không thì gọi API Add
     let url = id ? `http://127.0.0.1:5000/product/update` : `http://127.0.0.1:5000/product/add`;
-    if(id) productData.id = id;
+    if (id) productData.id = id;
 
     $.ajax({
         url: url,
@@ -80,7 +80,7 @@ function saveProduct() {
             loadProduct();
             bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
         },
-        error: function() {
+        error: function () {
             alert("Lỗi khi lưu sản phẩm!");
         }
     });
@@ -100,11 +100,11 @@ function deleteProduct(productId) {
             // QUAN TRỌNG: Phải nối tham số ?id= vào URL
             url: "http://127.0.0.1:5000/product/DeleteById?id=" + productId,
             type: "DELETE",
-            success: function(res) {
+            success: function (res) {
                 alert(res.message); // Sẽ hiện "Xóa thành công"
                 loadProduct();      // Tải lại danh sách sản phẩm
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error("Lỗi xóa:", xhr);
                 let msg = xhr.responseJSON ? xhr.responseJSON.message : "Lỗi kết nối server";
                 alert("Thất bại: " + msg);
