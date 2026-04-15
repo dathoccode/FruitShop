@@ -1,5 +1,4 @@
-﻿
-CREATE DATABASE Fruitables;
+﻿CREATE DATABASE Fruitables;
 GO
 USE Fruitables;
 GO
@@ -36,7 +35,9 @@ CREATE TABLE tblInvoice
     AccountID INT,
     TotalPayment DECIMAL(18, 2),
     InvoiceState NVARCHAR(50),
-    CONSTRAINT FK_Invoice_Account FOREIGN KEY (AccountID) REFERENCES tblAccount(AccountID)
+    CONSTRAINT FK_Invoice_Account 
+    FOREIGN KEY (AccountID) 
+    REFERENCES tblAccount(AccountID)
 );
 
 -- 4. Tạo bảng tblPayment
@@ -46,7 +47,10 @@ CREATE TABLE tblPayment
     InvoiceID INT,
     Paying_method NVARCHAR(100),
     Paying_date DATE,
-    CONSTRAINT FK_Payment_Invoice FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID)
+    CONSTRAINT FK_Payment_Invoice 
+    FOREIGN KEY (InvoiceID) 
+    REFERENCES tblInvoice(InvoiceID)
+    ON DELETE CASCADE
 );
 
 -- 5. Tạo bảng tblOrder
@@ -57,7 +61,10 @@ CREATE TABLE tblOrder
     InvoiceID INT,
     OrderAddress NVARCHAR(255),
     Phone VARCHAR(20),
-    CONSTRAINT FK_Order_Invoice FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID)
+    CONSTRAINT FK_Order_Invoice 
+    FOREIGN KEY (InvoiceID) 
+    REFERENCES tblInvoice(InvoiceID)
+    ON DELETE CASCADE
 );
 
 -- 6. Tạo bảng tblInvoiceDetail
@@ -67,8 +74,15 @@ CREATE TABLE tblInvoiceDetail
     InvoiceID INT,
     ProductID INT,
     Quantity INT,
-    CONSTRAINT FK_Detail_Invoice FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID),
-    CONSTRAINT FK_Detail_Product FOREIGN KEY (ProductID) REFERENCES tblProduct(ProductID)
+    CONSTRAINT FK_Detail_Invoice 
+    FOREIGN KEY (InvoiceID) 
+    REFERENCES tblInvoice(InvoiceID)
+    ON DELETE CASCADE,
+
+    CONSTRAINT FK_Detail_Product 
+    FOREIGN KEY (ProductID) 
+    REFERENCES tblProduct(ProductID)
+    ON DELETE CASCADE
 );
 
 -- 7. Tạo bảng tblCart
@@ -78,6 +92,14 @@ CREATE TABLE tblCart
     ProductID INT,
     Quantity INT,
     PRIMARY KEY (AccountID, ProductID),
-    CONSTRAINT FK_Cart_Account FOREIGN KEY (AccountID) REFERENCES tblAccount(AccountID),
-    CONSTRAINT FK_Cart_Product FOREIGN KEY (ProductID) REFERENCES tblProduct(ProductID)
+
+    CONSTRAINT FK_Cart_Account 
+    FOREIGN KEY (AccountID) 
+    REFERENCES tblAccount(AccountID)
+    ON DELETE CASCADE,
+
+    CONSTRAINT FK_Cart_Product 
+    FOREIGN KEY (ProductID) 
+    REFERENCES tblProduct(ProductID)
+    ON DELETE CASCADE
 );
