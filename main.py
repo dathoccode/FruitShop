@@ -1,3 +1,4 @@
+from ast import keyword
 import secrets
 import pyodbc
 from functools import wraps
@@ -250,6 +251,46 @@ def update_cart_quantity():
         return jsonify({"message": "Updated"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+## 4. API Search sản phẩm theo trong shop.html
+@app.route("/product/search", methods=["GET"])
+def search_products():
+    keyword = request.args.get("keyword", "").strip()
+
+    if not keyword:
+        return jsonify([])
+
+    like_keyword_start = f"{keyword}%"
+    like_keyword_full = f"%{keyword}%"
+
+    with conn.cursor() as cursor:
+        cursor.execute("""
+            SELECT TOP 50 ProductID, ProductName, Category, Price, Stock, Descript, Discount, ProductImage 
+            FROM tblProduct
+            WHERE ProductName COLLATE Latin1_General_CI_AI LIKE ?
+               OR ProductName COLLATE Latin1_General_CI_AI LIKE ?
+            ORDER BY 
+                CASE 
+                    WHEN ProductName COLLATE Latin1_General_CI_AI LIKE ? THEN 1
+                    ELSE 2
+                END
+        """, (like_keyword_start, like_keyword_full, like_keyword_start))
+        
+        rows = cursor.fetchall()  # dùng fetchall cho chắc
+
+    result = []
+    for row in rows:
+        result.append({
+            "ProductID": row[0],
+            "ProductName": row[1],
+            "Category": row[2],
+            "Price": float(row[3]),
+            "Stock": row[4],
+            "Descript": row[5],
+            "Discount": row[6],
+            "ProductImage": row[7]
+        })
+
+    return jsonify(result)
     
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
