@@ -168,9 +168,9 @@ function logout(token){
         },
         contentType: "application/json",
         success: function(res){
+            window.location.href = "/templates/login.html";
             alert("log out success", res.message);
             localStorage.removeItem("token");
-            window.location.href = "/templates/login.html";
         },
         error: function(e){
             alert("logout failed");
