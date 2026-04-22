@@ -96,6 +96,7 @@
     });
 
 })(jQuery);
+
 const formatVND = (price) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 const SHIP_FEE = 30000;
 
@@ -107,11 +108,10 @@ function logout() {
     }
 }
 
-
 function validateLogin(){
     var token = localStorage.getItem("token");
 
-    if(!token) {
+    if(!token || token == null) {
         window.location.href = "/templates/login.html";
     }
     else
@@ -129,10 +129,10 @@ function validateLogin(){
                     ${res.name}
                 </span>`
                 );
+                updateCartQuantityIcon();
             },
             error: function(e){
-                alert("get info failed");
-                console.log(e);
+                window.location.href = "/templates/login.html";
             }
         });
     }
@@ -192,5 +192,4 @@ $(document).on("click", ".btn-login", function(){
 $(document).ready(function () {
     // loadProducts();
     validateLogin();
-    updateCartQuantityIcon();
 });

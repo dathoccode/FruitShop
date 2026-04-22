@@ -1,5 +1,3 @@
-// index.js
-
 // 1. Hàm load toàn bộ sản phẩm (Dùng cho tab All và lúc tìm kiếm)
 function loadProducts(apiUrl = "http://127.0.0.1:5000/product/getAllProduct") {
     $.ajax({

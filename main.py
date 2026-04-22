@@ -90,6 +90,7 @@ def login_api():
     username = data.get("username")
     password = data.get("password")
 
+    #kiểm tra xem tài khoản mật khẩu có đúng không
     with conn.cursor() as cursor:
         cursor.execute(
             "SELECT AccountID, UserName FROM tblAccount WHERE UserName = ? AND Passwd = ?",
@@ -100,8 +101,24 @@ def login_api():
     if not row:
         return jsonify({"error": "Sai tài khoản hoặc mật khẩu"}), 401
 
+
     token = secrets.token_hex(32)
-    tokens[token] = row[0]
+    accountID = row[0]
+
+    # cập nhật token nếu tài khoản đang đăng nhập, nếu chưa thì thêm token hiện tại vào.
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            IF EXISTS (SELECT 1 FROM tblToken WHERE AccountID = ?)
+                UPDATE tblToken SET token = ? WHERE AccountID = ?
+            ELSE
+                INSERT INTO tblToken (token, AccountID) VALUES (?, ?)
+            """,
+            (accountID, token, accountID, token, accountID)
+        )
+        cursor.commit()
+
+    tokens[token] = accountID
     return jsonify({
         "message": "login success",
         "token": token,
